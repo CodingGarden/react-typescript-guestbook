@@ -1,16 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, Typography } from '@material-ui/core';
 
-import { useStoreState } from '../../hooks';
-
+import { useStoreState, useStoreActions } from '../../hooks';
+import GuestBookEntryForm from '../GuestBookEntryForm';
+import useStyles from './styles';
 
 const Home: React.FC = () => {
-  const entries = useStoreState(state => state.guestbook.entries);
+  const reverseEntries = useStoreState((state) => state.guestbook.reverseEntries);
+  const getEntries = useStoreActions((state) => state.guestbook.getEntries);
+  const classes = useStyles();
+
+  useEffect(() => {
+    getEntries();
+  }, []); // eslint-disable-line
   return (
     <div>
+      <GuestBookEntryForm />
       {
-        entries.map((entry) => (
-          <Card>
+        reverseEntries.map((entry) => (
+          <Card className={classes.entryCard} key={entry.id}>
             <CardContent>
               <Typography variant="h2">
                 {entry.name}
@@ -19,7 +27,7 @@ const Home: React.FC = () => {
                 {entry.content}
               </Typography>
               <Typography variant="caption">
-                {entry.submitted.toLocaleDateString()}
+                {entry.submitted}
               </Typography>
             </CardContent>
           </Card>
